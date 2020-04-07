@@ -3,7 +3,7 @@ package bronze;
 import java.io.*;
 import java.util.*;
 
-public class N진법 {
+public class 진법변환11005 {
 
 	// 제약 입출력 제외 Arraylist말고는 사용 안해봄
 	public static void main(String[] args) throws IOException {
