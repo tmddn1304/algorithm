@@ -1,48 +1,57 @@
-using namespace std;
- 
-int solution(int bridge_length, int weight, vector<int> truck_weights) {
-    int weight_now = 0;
-    queue<int> times, entered_weights;
-    for(int i=1;;i++)
-    {
-       if(times.size()>0)
-       {
-            // 다리의 맨 앞에 있던 트럭이 다리를 다 건넜을 때
-           if(i - times.front()==bridge_length)
-           {
-                // 트럭이 다리를 다 건널 때 마다 도착한 시간을(출발한 시간 + 다리 길이) 갱신해준다.
-               int finish_time = bridge_length + times.front();
-               // 다 건넌 트럭의 정보를 삭제해주고 다리가 견디는 무게도 갱신한다.
-               times.pop();
-               weight_now -= entered_weights.front();
-               entered_weights.pop();
-               //건너야할 트럭이 더 이상 없고 건너는 중인 트럭도 없을 때
-               if(truck_weights.size()==0&&entered_weights.size()==0)
-               {
-                    //마지막 트럭이 들어간 시간을 리턴한다.
-                   return finish_time; 
-               }
-           }
-       }
-        //다리의 한계 하중치를 초과하기 전까지 트럭을 다리 위로 올린다.
-        while(1)
-        {
-            // 다리에 트럭이 더 들어서지 못하거나 더 이상 들어설 트럭이 없으면 break
-            if(weight_now+truck_weights.front()>weight
-               ||truck_weights.size()==0)
-            {
-                break;
+import java.util.*;
+
+class Solution {
+    class Truck {
+        int weight;
+        int move;
+
+        public Truck(int weight) {
+            this.weight = weight;
+            this.move = 1;
+        }
+
+        public void moving() {
+            move++;
+        }
+    }
+
+    public int solution(int bridgeLength, int weight, int[] truckWeights) {
+        Queue<Truck> waitQ = new LinkedList<>();
+        Queue<Truck> moveQ = new LinkedList<>();
+
+        for (int t : truckWeights) {
+            waitQ.offer(new Truck(t));
+        }
+
+        int answer = 0;
+        int curWeight = 0;
+
+        while (!waitQ.isEmpty() || !moveQ.isEmpty()) {
+            answer++;
+
+            if (moveQ.isEmpty()) {
+                Truck t = waitQ.poll();
+                curWeight += t.weight;
+                moveQ.offer(t);
+                continue;
             }
-            else{
-                // 다리에 들어온 트럭의 무게가 추가된다.
-                weight_now += truck_weights.front();
-                // 다리에 들어온 트럭의 무게와 들어온 시간을 기록한다.
-                entered_weights.push(truck_weights.front());
-                times.push(i);
-                truck_weights.erase(truck_weights.begin());
-                break;
+
+            for (Truck t : moveQ) {
+                t.moving();
+            }
+
+            if (moveQ.peek().move > bridgeLength) {
+                Truck t = moveQ.poll();
+                curWeight -= t.weight;
+            }
+
+            if (!waitQ.isEmpty() && curWeight + waitQ.peek().weight <= weight) {
+                Truck t = waitQ.poll();
+                curWeight += t.weight;
+                moveQ.offer(t);
             }
         }
-         
+
+        return answer;
     }
 }
