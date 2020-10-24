@@ -1,10 +1,7 @@
-package nhn;
-
 import java.util.Arrays;
 
 public class Solution2 {
 	public static void solution(int day, int width, int[][] blocks) {
-		// TODO: 이곳에 코드를 작성하세요. 추가로 필요한 함수와 전역변수를 선언해서 사용하셔도 됩니다.
 		int ans = 0;
 		int[] pre = new int[blocks[0].length];
 		for (int[] block : blocks) {
