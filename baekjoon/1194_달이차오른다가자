@@ -1,0 +1,86 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	static int N;
+	static int M;
+	static char[][] map;
+	static boolean[][][] visited;
+
+	static int[] dr = { 1, -1, 0, 0 };
+	static int[] dc = { 0, 0, 1, -1 };
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		// BufferedReader br = new BufferedReader(new
+		// InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		Person start = null;
+		map = new char[N][M];
+		visited = new boolean[N][M][1 << 6];
+
+		for (int r = 0; r < N; r++) {
+			String str = br.readLine();
+			for (int c = 0; c < M; c++) {
+				map[r][c] = str.charAt(c);
+				if (map[r][c] == '0') {
+					start = new Person(r, c, 0);
+				}
+			}
+		}
+		System.out.println(BFS(start));
+	}
+
+	public static int BFS(Person start) {
+		Queue<Person> q = new LinkedList<Person>();
+		q.add(start);
+
+		visited[start.r][start.c][0] = true;
+		int time = 0;
+		while (!q.isEmpty()) {
+			int size = q.size();
+			for (int qsize = 0; qsize < size; qsize++) {
+				Person cur = q.poll();
+				int cr = cur.r;
+				int cc = cur.c;
+				int ckey = cur.key;
+				if (map[cr][cc] == '1') {
+					return time;
+				}
+
+				for (int i = 0; i < 4; i++) {
+					int nr = cr + dr[i];
+					int nc = cc + dc[i];
+					int key = ckey;
+					if (nr < 0 || nc < 0 || nr>= N || nc >= M || map[nr][nc] == '#')continue;
+					
+					if ('a' <= map[nr][nc] && map[nr][nc] <= 'f') {
+						key |= (1 << map[nr][nc] - 'a');
+					}
+					if ('A' <= map[nr][nc] && map[nr][nc] <= 'F') {
+						if ((key & (1 << (map[nr][nc] - 'A'))) == 0)continue;
+						
+					}
+
+					if (!visited[nr][nc][key]) {
+						visited[nr][nc][key] = true;
+						q.add(new Person(nr, nc, key));
+					}	
+				}
+			}
+			time++;
+		}
+		return -1;
+	}
+}
+
+class Person {
+	int r,c, key;
+	Person(int r, int c, int key) {
+		this.r = r;
+		this.c = c;
+		this.key = key;
+	}
+}
