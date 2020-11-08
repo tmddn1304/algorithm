@@ -1,0 +1,85 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	
+	static int[][] map;
+	static boolean[][][] visited;
+	static int N;
+	static int M;
+	static int T;
+	
+	public static class Warrior{
+		int r,c,step,sword;
+		public Warrior(int r, int c,int step,int sword) {
+			this.r =r;
+			this.c =c;
+			this.step = step;
+			this.sword = sword;
+		}
+	}
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		
+		N = Integer.parseInt(st.nextToken()); // 세로
+		M = Integer.parseInt(st.nextToken()); // 가로
+		T = Integer.parseInt(st.nextToken()); // 제한시간
+		
+		map = new int[N][M];
+		visited = new boolean[N][M][2];
+		for(int r=0; r<N; r++) {
+			st = new StringTokenizer(br.readLine());
+			for(int c=0; c<M; c++) {
+				map[r][c]=Integer.parseInt(st.nextToken());
+			}
+		}
+		bfs();
+		System.out.println(ans==987654321? "Fail" : ans);
+	}
+	static int[] dr = {-1,1,0,0};
+	static int[] dc = {0,0,-1,1};
+	
+	
+	static int ans = 987654321;
+	public static void bfs() {
+		Queue<Warrior> warrior = new LinkedList<>();
+		warrior.add(new Warrior(0, 0, 0,0));
+		visited[0][0][0] = true;
+		while(!warrior.isEmpty()) {
+			Warrior cur = warrior.poll();
+			int cc = cur.c;
+			int cr = cur.r;
+			int cstep = cur.step;
+			int csword = cur.sword;
+			
+			if(cc == M-1 && cr == N-1) {
+				if(cstep <= T)
+					ans = cstep;
+				return;
+			}
+			
+			for(int i=0; i<4; i++) {
+				int nc = cc + dc[i];
+				int nr = cr + dr[i];
+				if (!isOk(nr, nc)) continue;
+				if(map[nr][nc]==1 && csword==0) continue;
+				if(map[nr][nc]==2 && !visited[nr][nc][csword] ) {
+					visited[nr][nc][0] = true;
+					visited[nr][nc][1] = true;
+					warrior.add(new Warrior(nr, nc, cstep+1, 1));
+				}
+				if(!visited[nr][nc][csword]) {
+					visited[nr][nc][csword] = true;
+					warrior.add(new Warrior(nr, nc, cstep+1, csword));					
+				}
+			}
+		}
+		
+	}
+	public static boolean isOk(int r, int c) {
+		if (r < 0 || c < 0 || r >= N || c >= M)
+			return false;
+		return true;
+	}
+}
